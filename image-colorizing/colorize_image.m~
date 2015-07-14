@@ -1,0 +1,81 @@
+clear all
+close all
+d1 = dir('*.tif');
+d2 = dir('*.jpg');
+d = [d2]; 
+for i = 2:length(d)
+    im = imread(d(i).name);
+    [h, w, c] = size(im);
+    
+    %% remove white borders
+    row_sum = sum(im, 2);
+    row_sum_perc = row_sum/w/255;
+    delete_ind = [];
+    for j = h:-1:1
+        if(row_sum_perc(j)>0.95)
+            delete_ind = [delete_ind, j];
+        else 
+            break;
+        end
+    end
+    for j = 1:h
+        if(row_sum_perc(j)>0.95)
+            delete_ind = [delete_ind, j];
+        else 
+            break;
+        end
+    end
+    row_sum_perc(delete_ind) = [];
+    im(delete_ind, :) = [];
+ 
+    col_sum = sum(im, 1);
+    col_sum_perc = col_sum/w/255;
+    delete_ind = [];
+    for j = w:-1:1
+        if(col_sum_perc(j)>0.95)
+            delete_ind = [delete_ind, j];
+        else 
+            break;
+        end
+    end
+    for j = 1:w
+        if(col_sum_perc(j)>0.95)
+            delete_ind = [delete_ind, j];
+        else 
+            break;
+        end
+    end
+    col_sum_perc(delete_ind) = [];
+    im(:, delete_ind) = [];    
+    
+    [h, w, c] = size(im);
+    h_new = floor(h/3);
+    im_b = im(1:h_new, :);
+    im_g = im(h_new+1:2*h_new, :);
+    im_r = im(2*h_new+1: 3*h_new, :);
+    
+    im_b = im_b(floor(0.05*h_new):h_new - floor(0.05*h_new))
+    
+    out = cast(zeros(h_new, w, 3), class(im));
+    out(:, :, 1) = im_r;
+    out(:, :, 2) = im_g;
+    out(:, :, 3) = im_b;
+    subplot(131)
+    imshow(im_b);
+    subplot(132)
+    imshow(im_g);
+    subplot(133)
+    imshow(im_r);   
+    
+    out_aligned = out;
+    out_aligned(:, :, 1) = align_edge_ssd(im_b, im_r);
+    out_aligned(:, :, 2) = align_edge_ssd(im_b, im_g);
+    
+    out = im2uint8(out);
+    out_aligned = im2uint8(out_aligned);
+    figure
+    subplot(121)    
+    imshow(out)
+    subplot(122)
+    imshow(out_aligned)    
+end

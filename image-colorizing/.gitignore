@@ -1,0 +1,4 @@
+# ignore large images from my local machines
+# sample images are provided in sample_images/
+images/
+
