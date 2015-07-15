@@ -8,13 +8,13 @@ function [im1, im2] = align_images(im1, im2)
 [h2, w2, b2] = size(im2);
 
 % displays image
-figure(1), hold off, imagesc(im1), axis image, colormap gray
+figure(1), hold off, image(im1), axis image, colormap gray
 
 % gets two points from the user
 disp('Select two points from each image define rotation, scale, translation')
 [x1, y1] = ginput(2);
 cx1 = mean(x1); cy1 = mean(y1);
-figure(1), hold off, imagesc(im2), axis image
+figure(1), hold off, image(im2), axis image
 [x2, y2] = ginput(2);
 cx2 = mean(x2); cy2 = mean(y2);
 
@@ -78,5 +78,5 @@ else
     ty = ty+ceil(brd);    
 end
 
-figure(1), hold off, imagesc(im1), axis image, colormap gray
-figure(2), hold off, imagesc(im2), axis image, colormap gray
+figure(1), hold off, image(im1), axis image, colormap gray
+figure(2), hold off, image(im2), axis image, colormap gray
